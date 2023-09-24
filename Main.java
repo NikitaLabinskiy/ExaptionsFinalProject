@@ -1,26 +1,43 @@
 package org.example;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         Scanner scanner = new Scanner(System.in);
+        String[] data = null;
+        StringBuilder finalData = new StringBuilder();
+        boolean flag = true;
         try {
-            String[] data = inputAndCheckData(scanner);
+            data = inputAndCheckData(scanner);
             checkData(data);
             checkMobileNumber(data);
             checkGender(data);
             checkFIO(data);
+            finalData = finalCorrectData(data);
         } catch (IllegalArgumentException e){
             System.out.println(ANSI_RED + "Дата рождения введена не корректно, попробуйте снов!" + ANSI_RESET);
+            flag = false;
         } catch (ArithmeticException e){
             System.out.println(ANSI_RED + "Номер телефона введен не корректно, попробуйте снова!" + ANSI_RESET);
+            flag = false;
         } catch (NullPointerException e){
             System.out.println(ANSI_RED + "Пол введен не корректно, попробуйте снова!");
+            flag = false;
         } catch (RuntimeException e){
             System.out.println(ANSI_RED + "ФИО введены не корректно, ФИО не может содержать цифры или состоять из пробела!" + ANSI_RESET);
+            flag = false;
         }
-
+        if(flag) {
+            FileWriter fileWriter = new FileWriter(data[0], true);
+            fileWriter.write(finalData.toString());
+//            fileWriter.flush();
+            fileWriter.close();
+        }
     }
     public static String[] inputAndCheckData(Scanner scanner){
         while (true) {
@@ -81,6 +98,15 @@ public class Main {
         if(!(data[5].equals("m") || data[5].equals("f"))){
             throw new NullPointerException();
         }
+    }
+    public static StringBuilder finalCorrectData(String[] data){
+        StringBuilder finalData = new StringBuilder();
+        for (String datum : data) {
+            finalData.append(datum);
+            finalData.append(" ");
+        }
+        finalData.append("\n");
+        return finalData;
     }
     public static final String ANSI_RED = "\u001B[31m";
     public static final String ANSI_RESET = "\u001B[0m";
